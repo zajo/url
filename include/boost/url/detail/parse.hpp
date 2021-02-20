@@ -87,7 +87,7 @@ struct parser
         }
         pt.resize(id,
             p_ - begin_ -
-            pt.offset[id]);
+            pt.offset(id));
     }
 
     //------------------------------------------------------
@@ -860,7 +860,7 @@ parse_url(
     pr.parse_query(pt, ec);
     if(ec)
         return;
-  
+
     pr.parse_fragment(pt, ec);
     if(ec)
         return;
@@ -879,7 +879,7 @@ parse_origin(
     error_code& ec)
 {
     parser pr(s);
-    
+
     // scheme ":" [ "//" authority ]
     if(! pr.match_scheme())
     {
