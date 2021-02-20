@@ -558,36 +558,31 @@ public:
 		if( n > 0 )
 			reserve_all( length_all() + n );
 
+		char* p = ptr( last );
+		BOOST_ASSERT( p != 0 );
+		std::memmove(
+			p + n,
+			p,
+			length( last, PartCount ) + 1 );
+
+		std::size_t n1 = offset( first );
+		std::size_t n2 = pt.offset( first );
+		for( int i=first; i!=last; ++i )
 		{
-			char* p = ptr( last );
-			BOOST_ASSERT( p != 0 );
-			std::memmove(
-				p + n,
-				p,
-				length( last, PartCount ) + 1 );
-
-			std::size_t n1 = offset( first );
-			std::size_t n2 = pt.offset( first );
-			for( int i=first; i!=last; ++i )
-			{
-				std::size_t d = pt.index_[i] // NOTE: Part zero offset not stored in index_ (always 0).
-					- n2;
-				n1 += d;
-				n2 += d;
-				index_[i] = n1;
-			}
-
-			for( int i=last; i!=PartCount; ++i )
-				index_[i] += n; // NOTE: Part zero offset not stored in index_ (always 0).
+			std::size_t d = pt.index_[i] // NOTE: Part zero offset not stored in index_ (always 0).
+				- n2;
+			n1 += d;
+			n2 += d;
+			index_[i] = n1;
 		}
 
-		{
-			char* p = ptr( first );
-			std::memcpy(
-				p,
-				s.data() + pt.offset( first ),
-				pt.length( first, last ) );
-		}
+		for( int i=last; i!=PartCount; ++i )
+			index_[i] += n; // NOTE: Part zero offset not stored in index_ (always 0).
+
+		std::memcpy(
+			ptr( first ),
+			s.data() + pt.offset( first ),
+			pt.length( first, last ) );
 	}
 
 	void
