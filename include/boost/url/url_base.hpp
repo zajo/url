@@ -1114,7 +1114,7 @@ public:
         No-throw guarantee.
 
         @see url_view::segments_type
-*/
+    */
     inline
     url_view::segments_type
     segments() const noexcept;
@@ -1603,6 +1603,10 @@ public:
     BOOST_URL_DECL
     url_base&
     normalize_scheme() noexcept;
+
+private:
+    inline char* resize(int id, std::size_t new_size);
+    inline char* resize(int first, int last, std::size_t new_size);
 };
 
 //----------------------------------------------------------
@@ -1614,6 +1618,7 @@ class url_base::segments_type
     detail::parts_string* pt_ = nullptr;
 
 public:
+
     class value_type;
     class iterator;
     using const_iterator = iterator;
@@ -1827,9 +1832,9 @@ class url_base::segments_type::iterator
     char*
     ptr() const noexcept
     {
-        BOOST_ASSERT(pt_!=nullptr);
+        BOOST_ASSERT(pt_ || off_==0);
         BOOST_ASSERT(off_<=pt_->offset(detail::id_end));
-        return pt_->ptr() + off_;
+        return pt_->data() + off_;
     }
 
 public:
@@ -2108,9 +2113,9 @@ class url_base::params_type::iterator
     char*
     ptr() const noexcept
     {
-        BOOST_ASSERT(pt_!=nullptr);
+        BOOST_ASSERT(pt_ || off_==0);
         BOOST_ASSERT(off_<=pt_->offset(detail::id_end));
-        return pt_->ptr() + off_;
+        return pt_->data() + off_;
     }
 
 public:

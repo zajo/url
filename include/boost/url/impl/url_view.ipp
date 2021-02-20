@@ -393,7 +393,7 @@ operator*() const noexcept ->
     value_type
 {
     string_view s = {
-        pt_->c_str() + off_, n_ };
+        pt_->data() + off_, n_ };
     if(! s.empty() &&
         s.front() == '/')
         s = s.substr(1);

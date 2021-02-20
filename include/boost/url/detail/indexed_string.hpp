@@ -235,12 +235,6 @@ public:
 		return s_;
 	}
 
-	char const *
-	ptr() const noexcept
-	{
-		return s_;
-	}
-
 	char const*
 	ptr( int part ) const noexcept
 	{
@@ -346,7 +340,7 @@ public:
 
 	~indexed_string() noexcept
 	{
-		a_.deallocate( ptr(), capacity_ );
+		a_.deallocate( data(), capacity_ );
 	}
 
 	std::size_t
@@ -366,7 +360,7 @@ public:
 
 		++n; // One more for the zero terminator.
 		if( n <= capacity_ )
-			return ptr();
+			return data();
 
 		char* s = a_.allocate(n);
 		BOOST_ASSERT( s!=0 );
@@ -375,7 +369,7 @@ public:
 		BOOST_ASSERT( offset(terminating_zero) < n );
 		s[offset(terminating_zero)] = 0;
 
-		a_.deallocate( ptr(), capacity_ );
+		a_.deallocate( data(), capacity_ );
 		s_ = s;
 		capacity_ = n;
 
@@ -439,7 +433,7 @@ public:
 	}
 
 	char*
-	ptr() noexcept
+	data() noexcept
 	{
 		return const_cast<char *>(s_);
 	}
@@ -449,7 +443,7 @@ public:
 	{
 		return part_index<PartCount, PartsData>::ptr(
 			part,
-			ptr() );
+			data() );
 	}
 
 	struct change_part_reserved
@@ -500,7 +494,7 @@ public:
 	target_buffer
 	change_part( change_part_reserved r ) noexcept
 	{
-		char* const s = ptr();
+		char* const s = data();
 
 		char* p = s + r.idx;
 		if( r.n == 0 )
@@ -630,7 +624,7 @@ public:
 		reserve_all( n );
 
 		std::memcpy(
-			ptr(),
+			data(),
 			s.data(),
 			n );
 
@@ -657,7 +651,7 @@ public:
 	{
 		BOOST_ASSERT( part >= 0 );
 		BOOST_ASSERT( part <= PartCount );
-		char* s = ptr();
+		char* s = data();
 		auto const len = length(part);
 		if(len == new_size)
 			return s + offset(part);
@@ -711,7 +705,7 @@ public:
 		BOOST_ASSERT( last > first );
 		BOOST_ASSERT( last <= PartCount );
 
-		char* s = ptr();
+		char* s = data();
 		auto const len =
 			length(first, last);
 		if(new_size == 0 && len == 0)

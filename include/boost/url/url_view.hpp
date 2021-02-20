@@ -55,7 +55,7 @@ public:
     char const*
     data() const noexcept
     {
-        return pt_.c_str();
+        return pt_.data();
     }
 
     //------------------------------------------------------
