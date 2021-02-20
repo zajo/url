@@ -44,6 +44,7 @@ public:
     void
     testObservers()
     {
+        BOOST_TEST(url("/").size() == 1);
         BOOST_TEST(url("file:///").size() == 8);
         BOOST_TEST(string_view(url("/").data()) == "/");
         BOOST_TEST(url("/").capacity() >= 1);

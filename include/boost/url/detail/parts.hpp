@@ -44,30 +44,41 @@ using parts_view = indexed_view<id_end, parts_data>;
 
 class parts_string: public indexed_string<id_end, parts_data>
 {
-    using base = indexed_string<8, parts_data>;
+    using base = indexed_string<id_end, parts_data>;
 
 public:
 
+	BOOST_URL_NODISCARD
     int
     check_invariants() const noexcept
     {
-        int n = 0;
-        for( auto & c : get(id_path) )
-            n += c == '/';
-        if( n != nseg )
-            return __LINE__;
-        auto const s = get(id_query);
-        if( s.empty() )
         {
-            n = 0;
+            auto const s = get(id_path);
+            int n = 0;
+            if( !s.empty() )
+            {
+                n = s.front() != '/';
+                for( auto & c : s )
+                    n += c == '/';
+            }
+            if( n != nseg )
+                return __LINE__;
         }
-        else
         {
-            n = s.front() == '?';
-            for( auto & c : s )
-                n += c == '&';
+            auto const s = get(id_query);
+            int n = 0;
+            if( !s.empty() )
+            {
+                if( s.front() != '?' )
+                    return __LINE__;
+                ++n;
+                for( auto & c : s )
+                    n += c == '&';
+            }
+            if( n != nparam )
+                return __LINE__;
         }
-        if( n != nparam )
+        if( (host==host_type::none) != get(id_host).empty() )
             return __LINE__;
         return 0;
     }
@@ -79,7 +90,7 @@ public:
 	}
 
     void
-    clear_all()
+    clear_all() noexcept
     {
         base::clear_all();
         nseg = 0;
@@ -88,33 +99,33 @@ public:
     }
 
     void
-    clear( int first_part, int last_part )
+    clear( int first, int last ) noexcept
     {
-        base::clear( first_part, last_part );
-        if( first_part <= id_path && last_part > id_path )
+        base::clear( first, last );
+        if( first <= id_path && last > id_path )
             nseg = 0;
-        if( first_part <= id_query && last_part > id_query )
+        if( first <= id_query && last > id_query )
             nparam = 0;
-        if( first_part <= id_host && last_part > id_host )
+        if( first <= id_host && last > id_host )
             host = host_type::none;
         BOOST_ASSERT(check_invariants() == 0);
     }
 
     void
-    clear( int part )
+    clear( int part ) noexcept
     {
         clear( part, part + 1 );
     }
 
     void
-    copy( parts const & pt, string_view s, int first_part, int last_part )
+    copy( parts const & pt, string_view s, int first, int last )
     {
-        base::copy( pt, s, first_part, last_part );
-        if( first_part <= id_path && last_part > id_path )
+        base::copy( pt, s, first, last );
+        if( first <= id_path && last > id_path )
             nseg = pt.nseg;
-        if( first_part <= id_query && last_part > id_query )
+        if( first <= id_query && last > id_query )
             nparam = pt.nparam;
-        if( first_part <= id_host && last_part > id_host )
+        if( first <= id_host && last > id_host )
             host = pt.host;
         BOOST_ASSERT(check_invariants() == 0);
     }

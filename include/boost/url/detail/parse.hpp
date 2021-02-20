@@ -644,6 +644,7 @@ struct parser
             return;
         }
         ++p_;
+        ++pt.nseg;
         if(p_ != end_)
         {
             if(*p_ == '/')
@@ -659,7 +660,6 @@ struct parser
                 p_ + 1, end_, ec);
             if(ec)
                 return;
-            ++pt.nseg;
             while(p_ < end_)
             {
                 if(*p_ != '/')
